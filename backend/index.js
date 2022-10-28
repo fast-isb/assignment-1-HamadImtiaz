@@ -1,38 +1,35 @@
-/**
- * This is a basic starting point of the assignment
- * Modify the code according to your own needs and requirements
- */
-
-//const express = require('express')
-import express from 'express'; // <-- Module Style import
-import bodyParser from 'body-parser';
-
-// Importing user route
-import router from './routes/users.js';
-// const router = require('router')
-
-// const bodyParser = require('body-parser')
-
+const express = require('express')
+const dotenv=require('dotenv')
+const mongoose=require('mongoose')
 const app = express()
-const port = 3001
+dotenv.config({path:'./config.env'})
+const Port = process.env.Port;
+require('./database/connection')
+app.use(express.json());
+app.use(require('./routes/router'))
 
-app.use(bodyParser.json())
-// Adding a Router
-app.use('/users', router);
+const User=require('./models/userSchema')
 
-app.get('/', (req, res) => {
-    res.send('Hello Universe!')
-})
+const middleware=(req,res,next)=>{
+    console.log(`Hello from the MiddleWare`)
+    next();
+}
 
-app.get('/todos', (req, res) => {
-    res.send('A list of todo items will be returned')
-})
 
-app.post('/', (req, res) => {
-    console.log(req.body)
-    res.send('Posting a Request')
-})
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+app.get('/about', middleware,(req, res) => {
+    res.send('Hello about from the server')
+  })
+  app.get('/contact', (req, res) => {
+    res.send('Hello contact from the server')
+  })
+  app.get('/signin', (req, res) => {
+    res.send('Hello Login from the server')
+  })
+  app.get('/signup', (req, res) => {
+    res.send('Hello Register from the server')
+  })
+
+app.listen(Port, () => {
+  console.log(`Example app listening on port ${Port}`)
 })
