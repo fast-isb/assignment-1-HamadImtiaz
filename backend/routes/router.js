@@ -3,38 +3,9 @@ const route=express.Router();
 const bcrypt=require('bcryptjs')
 const jwt=require('jsonwebtoken')
 require('../database/connection');
-const User=require("../models/userSchema")
+const User=require("../Models/userSchema")
+const Routes=require("../Models/routeSchema")
 
-route.get('/', (req, res)=> {
-    res.send('Hello World from the server')
-  })
-
-
-
-  // By using promises method
-
-// route.post('/register',(req,res)=>{
-//     const{Firstname, Lastname, email, phoneNumber, Password, ConfirmPassword}=req.body;
-//     if(!Firstname || !Lastname || !email || !phoneNumber || !Password || !ConfirmPassword){
-//     return res.status(422).json({error:"Give input to all the fields"});
-// }
-
-//     User.findOne({email:email})
-//         .then((userExists)=>{
-//         if(userExists){
-//             return res.status(422).json({error:"Email Already exist"})
-//         }
-
-//         const user =new User({Firstname, Lastname, email, phoneNumber, Password, ConfirmPassword})
-//         user.save().then(()=>{
-//             return res.status(201).json({message:"User Registered Successfully"})
-//         }).catch((err)=>{
-//             return res.status(500).json({error:"User Failed to Registered"})
-//         })
-//     }).catch((err)=>{
-//         console.log(err);
-//     })
-// })
 
 
 
@@ -42,8 +13,9 @@ route.get('/', (req, res)=> {
 // By using Async method 
 
 route.post('/register',async (req,res)=>{
-    const{Firstname, Lastname, email, phoneNumber, Password, ConfirmPassword}=req.body;
-    if(!Firstname || !Lastname || !email || !phoneNumber || !Password || !ConfirmPassword){
+
+    const{name, email, phoneNumber, Password, ConfirmPassword}=req.body;
+    if(!name || !email || !phoneNumber || !Password || !ConfirmPassword){
     return res.status(422).json({error:"Give input to all the fields"});
 }
 
@@ -56,7 +28,7 @@ try{
             return res.status(422).json({error:"Password doesn't Match"})
         }
         else{
-            const user =new User({Firstname, Lastname, email, phoneNumber, Password, ConfirmPassword})
+            const user =new User({name, email, phoneNumber, Password, ConfirmPassword})
             const userRegistered=await user.save();
                 if(userRegistered){
                     return res.status(201).json({message:"User Registered Successfully"})
@@ -103,4 +75,89 @@ route.post('/login',async(req,res)=>{
     }
 
 })
-module.exports=route;
+
+
+ route.post('/addRoutes', async (req, res) => {
+
+    try{
+
+    const{Destination, Origin, Driver}=req.body;
+        if(!Destination||!Origin|| !Driver){
+        return res.status(422).json({error:"Give input to all the fields"});
+        }
+        const routes =new Routes({Destination, Origin, Driver})
+            const RouteAdded=await routes.save();
+                if(RouteAdded){
+                    return res.status(201).json({message:" Route Added Successfully"})
+                }
+                else{
+                    return res.status(500).json({error:"Route Failed to be added"})
+                }
+    }
+    catch(err){
+        console.log(err)
+    }
+  
+  });
+
+  route.put('/updateRoutes/:id',async(req,res)=>{
+ try{ 
+    const {id}=req.params
+    const response=await Routes.findByIdAndUpdate(id,req.body,{new:true});
+    if(response){
+      return res.status(201).json({message:" Route has been Updated"})
+  }
+  else{
+      return res.status(500).json({error:"Unable to update the Route"})
+  }
+  
+}catch(err){
+    console.log(err)
+}
+ 
+});
+
+route.delete("/deleteRoutes/:id", async (req, res) => {
+    const{id}=req.params;
+    const responses=await Routes.findByIdAndDelete({_id:id})
+
+    if(responses){
+
+        try{
+            const response = await Routes.find({})
+            if(response){
+                return res.json({response})
+            }
+            else{
+                return res.status(500).json({error:"Route name does not match"})
+            }
+        }catch(err){
+            console.log(err)
+        }
+        return res.status(201).json({message:" Route deleted Successfully"})
+    }
+    else{
+        return res.status(500).json({error:"Destination Name does not match"})
+    }
+  });
+route.get('/displayRoutes', async(req, res) => {
+    
+    const response = await Routes.find({})
+    
+    if(response){
+       return res.json({response})
+   }
+   else{
+       return res.status(500).json({error:"Route name does not match"})
+   }
+    });
+route.get('/getRoutes/:id',async(req,res)=>{
+    try{
+        const {id}=req.params;
+        const individualRoutes=await Routes.findById({_id:id});
+        res.status(201).json(individualRoutes)
+
+    }catch(err){
+        res.status(422).json(err)
+    }
+})

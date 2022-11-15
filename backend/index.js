@@ -1,14 +1,18 @@
-const express = require('express')
-const dotenv=require('dotenv')
-const mongoose=require('mongoose')
+import express from 'express'
+import cors from 'cors'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+
 const app = express()
 dotenv.config({path:'./config.env'})
 const Port = process.env.Port;
-require('./database/connection')
+app.use(require('./database/connection'))
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(cors())
 app.use(require('./routes/router'))
 
-const User=require('./models/userSchema')
+const User=require('./Models/userSchema')
 
 const middleware=(req,res,next)=>{
     console.log(`Hello from the MiddleWare`)
