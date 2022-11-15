@@ -1,30 +1,38 @@
 import React from 'react'
 import{ Routes,Route } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Home from './components/Home'
-import About from './components/About'
-import ContactUs from './components/ContactUs'
+import Nav from './components/Nav'
+import Homepage from './components/Homepage'
 import Login from './components/Login'
 import Register from './components/Register'
+
+import RoutesHome from './components/routesHome'
+import AddRoutes from './components/AddRoutes'
+import UpdateRoute from './components/UpdateRoute'
+import RoutesInformation from './components/RoutesInformation'
+
+
 
 const App=()=>{
   return(
     <>
       
-        <Navbar />
+        <Nav />
         <Routes>
+        <Route   exact path="/Homepage" element={<Homepage />}/> 
         
-        <Route  exact path="/Home" element={<Home />}/>
-        <Route   path="/About" element={<About />}/>
-        <Route   path="/ContactUs" element={<ContactUs />}/>
         <Route   path="/Login" element={<Login />}/>
         <Route   path="/Register" element={<Register />}/>
+
+        <Route   path='/RouteHome' element={<RoutesHome/>}/>
+        <Route   path='AddRoutes'  element={<AddRoutes/>}/>
+        <Route   path='UpdateRoutes/:id' element={<UpdateRoute/>}/>
+        <Route   path='RouteInformation/:id' element={<RoutesInformation/>}/>
+
+      
         </Routes> 
         
         
-        
-        
-             
+    
     </>
   )
 }
